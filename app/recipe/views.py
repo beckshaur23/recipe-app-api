@@ -7,6 +7,36 @@ from core.models import Tag, Ingredient, Recipe
 from recipe import serializers
 
 
+"""
+class UserViewSet(viewsets.ViewSet):
+
+    #Example empty viewset demonstrating the standard
+    #actions that will be handled by a router class.
+
+    #If you're using format suffixes, make sure to also include
+    #the `format=None` keyword argument for each action.
+
+
+    def list(self, request):
+        pass
+
+    def create(self, request):
+        pass
+
+    def retrieve(self, request, pk=None):
+        pass
+
+    def update(self, request, pk=None):
+        pass
+
+    def partial_update(self, request, pk=None):
+        pass
+
+    def destroy(self, request, pk=None):
+        pass
+"""
+
+
 class BaseRecipeAttrViewSet(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
                             mixins.CreateModelMixin):
@@ -37,8 +67,8 @@ class IngredientViewSet(BaseRecipeAttrViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Manage recipes in the database"""
-    serializer_class = serializers.RecipeSerializer
     queryset = Recipe.objects.all()
+    serializer_class = serializers.RecipeSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -52,3 +82,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return serializers.RecipeDetailSerializer
 
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Create a new recipe"""
+        serializer.save(user=self.request.user)
